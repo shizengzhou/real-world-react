@@ -3,10 +3,29 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import 'nprogress/nprogress.css';
+import EventList from './routes/EventList';
+import EventLayout from './routes/EventLayout';
+import EventShow from './routes/EventShow';
+import EventCreate from './routes/EventCreate';
+import NotFound from './routes/NotFound';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />}>
+          <Route index element={<EventList />} />
+          <Route path="event" element={<EventLayout />}>
+            <Route path=":eventId" element={<EventShow />} />
+            <Route path="create" element={<EventCreate />} />
+          </Route>
+          <Route path="404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );
