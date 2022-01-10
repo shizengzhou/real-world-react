@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react-lite';
 import classNames from 'classnames';
-import { useStore } from '../../store/NotificationStore';
+import { StoreContext } from '../../store';
 import './index.css';
 
 const NotificationBar = observer(props => {
@@ -11,11 +11,11 @@ const NotificationBar = observer(props => {
     'notification-bar',
     `-text-${notification.type}`
   );
-  const store = useStore();
+  const store = useContext(StoreContext);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      store.remove(notification);
+      store.notificationStore.remove(notification);
     }, 5000);
     return () => clearTimeout(timeout);
   });

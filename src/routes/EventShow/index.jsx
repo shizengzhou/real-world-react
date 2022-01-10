@@ -1,27 +1,29 @@
-import { useState, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BaseIcon from '../../components/BaseIcon';
-import EventService from '../../services/EventService';
+import { StoreContext } from '../../store';
 import formatDate from '../../utils/date';
 import './index.css';
 
-function EventShow() {
-  const [event, setEvent] = useState(null);
+const EventShow = observer(() => {
   const params = useParams();
   const navigate = useNavigate();
+  const { eventStore } = useContext(StoreContext);
+  const event = eventStore.event;
 
   useEffect(() => {
-    EventService.getEvent(params.eventId)
-      .then(res => {
-        setEvent(res.data);
-      })
+    eventStore
+      .fetchEvent(params.eventId)
       .catch(error => {
         console.log(error);
         if (error.response && error.response.status === 404) {
-          navigate('/404', { replace: true, state: { resource: 'event' } })
+          navigate('/404', { replace: true, state: { resource: 'event' } });
+        } else {
+          navigate('/network-issue');
         }
       });
-  }, [params.eventId]);
+  }, [params.eventId, eventStore]);
 
   return (
     event && (
@@ -56,6 +58,6 @@ function EventShow() {
       </div>
     )
   );
-}
+});
 
 export default EventShow;

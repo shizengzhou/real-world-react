@@ -1,35 +1,21 @@
-import { useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useContext, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import EventCard from '../../components/EventCard';
-import EventService from '../../services/EventService';
-import { useStore } from '../../store/NotificationStore';
+import { StoreContext } from '../../store';
 
-function EventList() {
+const EventList = observer(() =>{
   const [searchParams] = useSearchParams({ page: 1 });
-  const [events, setEvents] = useState([]);
-  const [eventsTotal, setEventsTotal] = useState(0);
-  const store = useStore();
+  const store = useContext(StoreContext);
 
   useEffect(() => {
-    EventService.getEvents(3, searchParams.get('page'))
-      .then(res => {
-        setEvents(res.data);
-        setEventsTotal(res.headers['x-total-count']);
-      })
-      .catch(error => {
-        console.log(error);
-        const notification = {
-          type: 'error',
-          message: 'There was a problem fetching events: ' + error.message,
-        };
-        store.add(notification);
-      });
+    store.eventStore.fetchEvents(searchParams.get('page'));
   }, [searchParams, store]);
 
   return (
     <div>
       <h1>Event Listing</h1>
-      {events.map(event => (
+      {store.eventStore.events.map(event => (
         <EventCard key={event.id} event={event} />
       ))}
       {searchParams.get('page') > 1 && (
@@ -38,13 +24,13 @@ function EventList() {
         </Link>
       )}
       {' '}
-      {searchParams.get('page') * 3 < eventsTotal && (
+      {searchParams.get('page') * 3 < store.eventStore.eventsTotal && (
         <Link to={`/?page=${parseInt(searchParams.get('page')) + 1}`}>
           Next Page
         </Link>
       )}
     </div>
   );
-}
+});
 
 export default EventList;

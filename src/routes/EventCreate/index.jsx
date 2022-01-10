@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NProgress from 'nprogress';
 import DatePicker from 'react-datepicker';
 import BaseButton from '../../components/BaseButton';
 import BaseInput from '../../components/BaseInput';
 import BaseSelect from '../../components/BaseSelect';
-import EventService from '../../services/EventService';
-import { useStore } from '../../store/NotificationStore';
+import { StoreContext } from '../../store';
 import 'react-datepicker/dist/react-datepicker.css';
 import './index.css';
 
@@ -31,7 +31,7 @@ function EventCreate() {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const navigate = useNavigate();
-  const store = useStore();
+  const store = useContext(StoreContext);
 
   function createEvent(e) {
     e.preventDefault();
@@ -47,18 +47,13 @@ function EventCreate() {
       time,
       attendees: []
     };
-    EventService.postEvent(event)
+    store.eventStore.createEvent(event)
       .then(() => {
         navigate(`/event/${id}`);
       })
-      .catch(error => {
-        console.log(error);
-        const notification = {
-          type: 'error',
-          message: 'There was a problem creating event: ' + error.message,
-        };
-        store.add(notification);
-      })
+      .catch(() => {
+        NProgress.done();
+      });
   }
 
   return (

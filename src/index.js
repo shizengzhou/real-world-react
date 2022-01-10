@@ -10,22 +10,27 @@ import EventLayout from './routes/EventLayout';
 import EventShow from './routes/EventShow';
 import EventCreate from './routes/EventCreate';
 import NotFound from './routes/NotFound';
+import NetworkIssue from './routes/NetworkIssue';
+import { RootStore, StoreContext } from './store';
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route index element={<EventList />} />
-          <Route path="event" element={<EventLayout />}>
-            <Route path=":eventId" element={<EventShow />} />
-            <Route path="create" element={<EventCreate />} />
+    <StoreContext.Provider value={new RootStore()}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<EventList />} />
+            <Route path="event" element={<EventLayout />}>
+              <Route path=":eventId" element={<EventShow />} />
+              <Route path="create" element={<EventCreate />} />
+            </Route>
+            <Route path="404" element={<NotFound />} />
+            <Route path="network-issue" element={<NetworkIssue />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
-          <Route path="404" element={<NotFound />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </StoreContext.Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
