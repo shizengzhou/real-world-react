@@ -215,22 +215,6 @@
           "name": "Mary Gordon"
         }
       ]
-    },
-    {
-      "id": 10,
-      "category": "animal welfare",
-      "organizer": {
-        "user": {
-          "id": "abc123",
-          "name": "Adam Jahr"
-        }
-      },
-      "title": "Gregg's Event",
-      "description": "We'll do stuff",
-      "location": "Your House",
-      "date": "",
-      "time": "5:00",
-      "attendees": []
     }
   ]
 }
