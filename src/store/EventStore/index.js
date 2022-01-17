@@ -30,39 +30,41 @@ class EventStore {
   }
 
   fetchEvents(page) {
-    EventService.getEvents(this.perPage, page).then(
-      res => {
+    EventService.getEvents(this.perPage, page)
+      .then(res => {
         this.setEvents(res.data);
         this.setEventsTotal(res.headers['x-total-count']);
-      }
-    )
-    .catch(error => {
-      const notification = {
-        type: 'error',
-        message: 'There was a problem fetching events: ' + error.message,
-      };
-      this.rootStore.notificationStore.add(notification);
-      NProgress.done();
-    });
+      })
+      .catch(error => {
+        const notification = {
+          type: 'error',
+          message: 'There was a problem fetching events: ' + error.message
+        };
+        this.rootStore.notificationStore.add(notification);
+        NProgress.done();
+      });
   }
 
   fetchEvent(id) {
-    return new Promise(() => {
+    return new Promise((resolve, reject) => {
       if (this.event && this.event.id === Number(id)) {
-        return this.event;
+        return resolve(this.event);
       }
 
       const event = this.events.find(e => e.id === Number(id));
       if (event) {
         this.setEvent(event);
-        return event;
+        return resolve(event);
       }
-      return EventService.getEvent(id).then(
-        res => {
+      return EventService.getEvent(id)
+        .then(res => {
           this.setEvent(res.data);
-          return res.data;
-        }
-      );
+          return resolve(res.data);
+        })
+        .catch(error => {
+          reject(error);
+          NProgress.done();
+        });
     });
   }
 

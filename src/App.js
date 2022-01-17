@@ -1,15 +1,29 @@
-import { Outlet } from 'react-router-dom';
-import NavBar from './components/NavBar';
-import NotificationContainer from './components/NotificationContainer';
-import './App.css';
+import { Link, Outlet } from 'react-router-dom';
+import { Layout, Menu } from 'antd';
+import './App.less';
+
+const { Header, Content } = Layout;
 
 function App() {
   return (
-    <div>
-      <NavBar />
-      <NotificationContainer />
-      <Outlet />
-    </div>
+    <Layout className="layout">
+      <Header className="header">
+        <Link to="/" className="brand">
+          Real World Events
+        </Link>
+        <Menu mode="horizontal" style={{ borderBottom: 'none' }}>
+          <Menu.Item>
+            <Link to="/">List</Link>
+          </Menu.Item>
+          <Menu.Item>
+            <Link to="/event/create">Create</Link>
+          </Menu.Item>
+        </Menu>
+      </Header>
+      <Content>
+        <Outlet />
+      </Content>
+    </Layout>
   );
 }
 

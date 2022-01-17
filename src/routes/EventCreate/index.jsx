@@ -1,13 +1,13 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button, Form, Input, Select, DatePicker } from 'antd';
+import moment from 'moment';
 import NProgress from 'nprogress';
-import DatePicker from 'react-datepicker';
-import BaseButton from '../../components/BaseButton';
-import BaseInput from '../../components/BaseInput';
-import BaseSelect from '../../components/BaseSelect';
 import { StoreContext } from '../../store';
 import 'react-datepicker/dist/react-datepicker.css';
 import './index.css';
+
+const { Option } = Select;
 
 const categories = [
   'sustainability',
@@ -24,17 +24,11 @@ for (let i = 0; i < 24; i++) {
 }
 
 function EventCreate() {
-  const [category, setCategory] = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
   const navigate = useNavigate();
   const store = useContext(StoreContext);
 
-  function createEvent(e) {
-    e.preventDefault();
+  function createEvent(values) {
+    const { category, title, description, location, date, time } = values;
     const id = Math.floor(Math.random() * 10000000);
     const event = {
       id,
@@ -43,7 +37,7 @@ function EventCreate() {
       title,
       description,
       location,
-      date,
+      date: moment(date).format('dd MMM yyyy'),
       time,
       attendees: []
     };
@@ -59,55 +53,70 @@ function EventCreate() {
   return (
     <div>
       <h1>Create Event</h1>
-      <form onSubmit={createEvent}>
-        <BaseSelect
-          className="field"
+      <Form layout="vertical" onFinish={createEvent}>
+        <Form.Item
           label="Select a category"
-          options={categories}
-          value={category}
-          handleChange={e => setCategory(e.target.value)}
-        />
+          name="category"
+          rules={[{ required: true, message: 'Category is required.' }]}
+        >
+          <Select>
+            {categories.map(category => (
+              <Option key={category} value={category}>{category}</Option>
+            ))}
+          </Select>
+        </Form.Item>
         <h3>Name & describe your event</h3>
-        <BaseInput
-          className="field"
+        <Form.Item
           label="Title"
-          placeholder="Add an event title"
-          value={title}
-          handleChange={e => setTitle(e.target.value)}
-        />
-        <BaseInput
-          className="field"
-          label="Description"
-          placeholder="Add a description"
-          value={description}
-          handleChange={e => setDescription(e.target.value)}
-        />
-        <h3>Where is your event?</h3>
-        <BaseInput
-          className="field"
-          label="Location"
-          placeholder="Add a location"
-          value={location}
-          handleChange={e => setLocation(e.target.value)}
-        />
-        <h3>When is your event?</h3>
-        <div className="field">
-          <label>Date</label>
-          <DatePicker
-            selected={date}
-            onSelect={date => setDate(date)}
-            dateFormat="dd MMM yyyy"
+          name="title"
+          rules={[{ required: true, message: 'Title is required.' }]}
+        >
+          <Input
+            placeholder="Add an event title"
           />
-        </div>
-        <BaseSelect
-          className="field"
+        </Form.Item>
+        <Form.Item
+          label="Description"
+          name="description"
+          rules={[{ required: true, message: 'Description is required.' }]}
+        >
+          <Input
+            placeholder="Add a description"
+          />
+        </Form.Item>
+        <h3>Where is your event?</h3>
+        <Form.Item
+          label="Location"
+          name="location"
+          rules={[{ required: true, message: 'Location is required.' }]}
+        >
+          <Input
+            placeholder="Add a location"
+          />
+        </Form.Item>
+        <h3>When is your event?</h3>
+        <Form.Item
+          label="Date"
+          name="date"
+          rules={[{ required: true, message: 'Date is required.' }]}
+        >
+          <DatePicker
+            format="dd MMM yyyy"
+          />
+        </Form.Item>
+        <Form.Item
           label="Select a time"
-          options={times}
-          value={time}
-          handleChange={e => setTime(e.target.value)}
-        />
-        <BaseButton type="submit" className="-fill-gradient">Submit</BaseButton>
-      </form>
+          name="time"
+          rules={[{ required: true, message: 'Time is required.' }]}
+        >
+          <Select>
+            {times.map(time => (
+              <Option key={time} value={time}>{time}</Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Button type="primary" htmlType="submit">Submit</Button>
+      </Form>
     </div>
   );
 }
