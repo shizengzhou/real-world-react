@@ -1,31 +1,31 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react-lite';
 import classNames from 'classnames';
-import { StoreContext } from '../../store';
+import { removeNotification } from '../../reducers/notificationsSlice';
 import './index.css';
 
-const NotificationBar = observer(props => {
+const NotificationBar = props => {
+  const dispatch = useDispatch();
   const { notification } = props;
   const notificationBarClass = classNames(
     'notification-bar',
     `-text-${notification.type}`
   );
-  const store = useContext(StoreContext);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      store.notificationStore.remove(notification);
+      dispatch(removeNotification(notification));
     }, 5000);
     return () => clearTimeout(timeout);
-  });
+  }, [dispatch, notification]);
 
   return (
     <div className={notificationBarClass}>
       <p>{notification.message}</p>
     </div>
   );
-});
+};
 
 NotificationBar.propTypes = {
   notification: PropTypes.object.isRequired

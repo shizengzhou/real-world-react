@@ -1,11 +1,12 @@
-import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Button, Form, Input, Select, DatePicker } from 'antd';
 import moment from 'moment';
 import NProgress from 'nprogress';
-import { StoreContext } from '../../store';
 import 'react-datepicker/dist/react-datepicker.css';
 import './index.css';
+import { addNotification } from '../../reducers/notificationsSlice';
+import { addEvent } from '../../reducers/eventsSlice';
 
 const { Option } = Select;
 
@@ -24,30 +25,40 @@ for (let i = 0; i < 24; i++) {
 }
 
 function EventCreate() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const store = useContext(StoreContext);
 
-  function createEvent(values) {
-    const { category, title, description, location, date, time } = values;
-    const id = Math.floor(Math.random() * 10000000);
-    const event = {
-      id,
-      category,
-      organizer: 'zsz',
-      title,
-      description,
-      location,
-      date: moment(date).format('dd MMM yyyy'),
-      time,
-      attendees: []
-    };
-    store.eventStore.createEvent(event)
-      .then(() => {
-        navigate(`/event/${id}`);
-      })
-      .catch(() => {
-        NProgress.done();
-      });
+  async function createEvent(values) {
+    try {
+      const { category, title, description, location, date, time } = values;
+      const id = Math.floor(Math.random() * 10000000);
+      const event = {
+        id,
+        category,
+        organizer: 'zsz',
+        title,
+        description,
+        location,
+        date: moment(date).format('dd MMM yyyy'),
+        time,
+        attendees: []
+      };
+      await dispatch(addEvent(event)).unwrap();
+      const notification = {
+        type: 'success',
+        message: 'Your event has been created!',
+      };
+      dispatch(addNotification(notification));
+      navigate(`/event/${id}`);
+    } catch (error) {
+      console.log(error);
+      NProgress.done();
+      const notification = {
+        type: 'error',
+        message: 'There was a problem creating event: ' + error.message,
+      };
+      dispatch(addNotification(notification));
+    }
   }
 
   return (

@@ -1,25 +1,51 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { observer } from 'mobx-react-lite';
+import { useDispatch, useSelector } from 'react-redux';
 import { Pagination } from 'antd';
 import EventCard from '../../components/EventCard';
-import { StoreContext } from '../../store';
+import { fetchEvents, selectAllEvents } from '../../reducers/eventsSlice';
+import { addNotification } from '../../reducers/notificationsSlice';
 
-const EventList = observer(() =>{
+const EventList = () => {
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams({ page: 1 });
   const [current, setCurrent] = useState(parseInt(searchParams.get('page')));
-  const store = useContext(StoreContext);
+
+  const events = useSelector(selectAllEvents);
+  const eventsTotal = useSelector(state => state.events.eventsTotal);
 
   useEffect(() => {
-    store.eventStore.fetchEvents(searchParams.get('page'));
-  }, [searchParams, store]);
+    async function fetchData() {
+      try {
+        await dispatch(
+          fetchEvents({ perPage: 3, page: searchParams.get('page') })
+        ).unwrap();
+      } catch (error) {
+        console.log(error);
+        const notification = {
+          type: 'error',
+          message: 'There was a problem fetching events: ' + error.message
+        };
+        dispatch(addNotification(notification));
+      }
+    }
+    fetchData();
+  }, [dispatch, searchParams]);
 
   function renderPageItem(page, type) {
     if (type === 'prev') {
-      return <Link to={`/?page=${parseInt(searchParams.get('page')) - 1}`}>{type}</Link>
+      return (
+        <Link to={`/?page=${parseInt(searchParams.get('page')) - 1}`}>
+          {type}
+        </Link>
+      );
     }
     if (type === 'next') {
-      return <Link to={`/?page=${parseInt(searchParams.get('page')) + 1}`}>{type}</Link>
+      return (
+        <Link to={`/?page=${parseInt(searchParams.get('page')) + 1}`}>
+          {type}
+        </Link>
+      );
     }
     return <Link to={`/?page=${page}`}>{page}</Link>;
   }
@@ -27,19 +53,19 @@ const EventList = observer(() =>{
   return (
     <div>
       <h1>Event Listing</h1>
-      {store.eventStore.events.map(event => (
+      {events.map(event => (
         <EventCard key={event.id} event={event} />
       ))}
       <Pagination
         defaultPageSize={3}
         defaultCurrent={1}
         current={current}
-        total={store.eventStore.eventsTotal}
+        total={eventsTotal}
         itemRender={renderPageItem}
         onChange={page => setCurrent(page)}
       />
     </div>
   );
-});
+};
 
 export default EventList;

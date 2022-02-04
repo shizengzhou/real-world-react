@@ -1,21 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import 'nprogress/nprogress.css';
+import store from './store';
 import EventList from './routes/EventList';
 import EventLayout from './routes/EventLayout';
 import EventShow from './routes/EventShow';
 import EventCreate from './routes/EventCreate';
 import NotFound from './routes/NotFound';
 import NetworkIssue from './routes/NetworkIssue';
-import { RootStore, StoreContext } from './store';
 
 ReactDOM.render(
   <React.StrictMode>
-    <StoreContext.Provider value={new RootStore()}>
+    <Provider store={store}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />}>
@@ -30,7 +31,7 @@ ReactDOM.render(
           </Route>
         </Routes>
       </BrowserRouter>
-    </StoreContext.Provider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
