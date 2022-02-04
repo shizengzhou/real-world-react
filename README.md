@@ -1,6 +1,6 @@
 # Real World React
 
-该项目是根据我在 Vue Mastery 上学习的 Real World Vue 课程，使用`React`重写。路由使用的是`react-router@6`，状态管理使用的是`mobx@6`，并且尝试使用了 Ant Design。
+该项目是根据我在 Vue Mastery 上学习的 Real World Vue 课程，使用`React`重写。路由使用的是`react-router@6`，状态管理使用的是`Redux`，并且尝试使用了 Ant Design。
 
 ## 如何运行
 
