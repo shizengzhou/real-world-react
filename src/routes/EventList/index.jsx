@@ -6,20 +6,27 @@ import EventCard from '../../components/EventCard';
 import { StoreContext } from '../../store';
 
 const EventList = observer(() =>{
-  const [searchParams] = useSearchParams({ page: 1 });
-  const [current, setCurrent] = useState(parseInt(searchParams.get('page')));
+  const [searchParams] = useSearchParams();
+  const [current, setCurrent] = useState(1);
   const store = useContext(StoreContext);
 
   useEffect(() => {
-    store.eventStore.fetchEvents(searchParams.get('page'));
-  }, [searchParams, store]);
+    const page = searchParams.get('page');
+    console.log(page);
+    if (!page) {
+      setCurrent(1);
+    } else {
+      setCurrent(parseInt(page));
+    }
+    store.eventStore.fetchEvents(current);
+  }, [searchParams, store, current]);
 
   function renderPageItem(page, type) {
     if (type === 'prev') {
-      return <Link to={`/?page=${parseInt(searchParams.get('page')) - 1}`}>{type}</Link>
+      return <Link to={`/?page=${current - 1}`}>{type}</Link>
     }
     if (type === 'next') {
-      return <Link to={`/?page=${parseInt(searchParams.get('page')) + 1}`}>{type}</Link>
+      return <Link to={`/?page=${current + 1}`}>{type}</Link>
     }
     return <Link to={`/?page=${page}`}>{page}</Link>;
   }
