@@ -2,7 +2,9 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const usersSlice = createSlice({
   name: 'users',
-  initialState: [{ id: 'abc123', name: 'Adam Jahr' }],
+  initialState: {
+    user: { id: 'abc123', name: 'Adam Jahr' }
+  },
   reducers: {}
 });
 

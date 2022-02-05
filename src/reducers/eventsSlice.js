@@ -1,5 +1,16 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  createEntityAdapter
+} from '@reduxjs/toolkit';
 import EventService from '../services/EventService';
+
+const eventsAdapter = createEntityAdapter();
+
+const initialState = eventsAdapter.getInitialState({
+  eventsTotal: 0,
+  event: null
+});
 
 export const fetchEvents = createAsyncThunk(
   'events/fetchEvents',
@@ -24,16 +35,12 @@ export const addEvent = createAsyncThunk(
 
 const eventsSlice = createSlice({
   name: 'events',
-  initialState: {
-    events: [],
-    eventsTotal: 0,
-    event: null
-  },
+  initialState,
   reducers: {},
   extraReducers(builder) {
     builder
       .addCase(fetchEvents.fulfilled, (state, action) => {
-        state.events = action.payload.data;
+        eventsAdapter.setAll(state, action.payload.data);
         state.eventsTotal = action.payload.total;
       })
       .addCase(fetchEvent.fulfilled, (state, action) => {
@@ -44,12 +51,14 @@ const eventsSlice = createSlice({
 
 export default eventsSlice.reducer;
 
-export const selectAllEvents = state => state.events.events;
+export const {
+  selectAll: selectAllEvents
+} = eventsAdapter.getSelectors(state => state.events)
 
 export const selectEventById = (state, eventId) => {
   const event = state.events.event;
   if (event && event.id === eventId) {
     return event;
   }
-  return state.events.events.find(e => e.id === eventId);
+  return state.events.entities[eventId];
 }

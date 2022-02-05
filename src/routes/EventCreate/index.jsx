@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Form, Input, Select, DatePicker } from 'antd';
 import moment from 'moment';
 import NProgress from 'nprogress';
@@ -27,6 +27,7 @@ for (let i = 0; i < 24; i++) {
 function EventCreate() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(state => state.users.user);
 
   async function createEvent(values) {
     try {
@@ -35,7 +36,7 @@ function EventCreate() {
       const event = {
         id,
         category,
-        organizer: 'zsz',
+        organizer: user.name,
         title,
         description,
         location,

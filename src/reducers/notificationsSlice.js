@@ -1,25 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
+
+const notificationAdapter = createEntityAdapter();
+
+const initialState = notificationAdapter.getInitialState();
 
 let nextId = 1;
 
 const notificationsSlice = createSlice({
   name: 'notifications',
-  initialState: [],
+  initialState,
   reducers: {
     addNotification(state, action) {
-      state.push({
-        ...action.payload,
-        id: nextId++
-      });
+      notificationAdapter.addOne(state, { ...action.payload, id: nextId++ })
     },
     removeNotification(state, action) {
       // state = state.filter(
       //   notification => notification.id !== action.payload.id
       // );
-      const index = state.findIndex(
-        notification => notification.id === action.payload.id
-      );
-      state.splice(index, 1);
+      notificationAdapter.removeOne(state, action.payload.id)
     }
   }
 });
@@ -31,4 +29,6 @@ export const {
 
 export default notificationsSlice.reducer;
 
-export const selectAllNotifications = state => state.notifications;
+export const {
+  selectAll: selectAllNotifications
+} = notificationAdapter.getSelectors(state => state.notifications)
