@@ -24,7 +24,7 @@ const EventList = () => {
     async function fetchData() {
       try {
         await dispatch(
-          fetchEvents({ perPage: 3, page: searchParams.get('page') })
+          fetchEvents({ perPage: 3, page: current })
         ).unwrap();
       } catch (error) {
         console.log(error);
@@ -37,7 +37,7 @@ const EventList = () => {
       }
     }
     fetchData();
-  }, [dispatch, searchParams]);
+  }, [dispatch, searchParams, current]);
 
   function renderPageItem(page, type) {
     if (type === 'prev') {
