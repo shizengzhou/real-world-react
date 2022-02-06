@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import NProgress from 'nprogress';
@@ -9,22 +9,15 @@ import { addNotification } from '../../reducers/notificationsSlice';
 
 const EventList = () => {
   const dispatch = useDispatch();
-  const [searchParams] = useSearchParams();
-  const [current, setCurrent] = useState(1);
-
+  const [searchParams, setSearchParams] = useSearchParams({ page: 1 });
   const events = useSelector(selectAllEvents);
   const eventsTotal = useSelector(state => state.events.eventsTotal);
 
   useEffect(() => {
-    const page = searchParams.get('page');
-    if (!page) {
-      setCurrent(1);
-    }
-
     async function fetchData() {
       try {
         await dispatch(
-          fetchEvents({ perPage: 3, page: current })
+          fetchEvents({ perPage: 3, page: searchParams.get('page') })
         ).unwrap();
       } catch (error) {
         console.log(error);
@@ -37,19 +30,19 @@ const EventList = () => {
       }
     }
     fetchData();
-  }, [dispatch, searchParams, current]);
+  }, [dispatch, searchParams]);
 
   function renderPageItem(page, type) {
     if (type === 'prev') {
       return (
-        <Link to={`/?page=${current - 1}`}>
+        <Link to={`/?page=${Number(searchParams.get('page')) - 1}`}>
           {type}
         </Link>
       );
     }
     if (type === 'next') {
       return (
-        <Link to={`/?page=${current + 1}`}>
+        <Link to={`/?page=${Number(searchParams.get('page')) + 1}`}>
           {type}
         </Link>
       );
@@ -66,10 +59,10 @@ const EventList = () => {
       <Pagination
         defaultPageSize={3}
         defaultCurrent={1}
-        current={current}
+        current={Number(searchParams.get('page'))}
         total={eventsTotal}
         itemRender={renderPageItem}
-        onChange={page => setCurrent(page)}
+        onChange={page => setSearchParams({ page })}
       />
     </div>
   );
